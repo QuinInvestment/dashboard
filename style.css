@@ -159,7 +159,7 @@ main{ max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
 .donut-center{
   position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
-#donutCount{ font-family: var(--font-mono); font-size: 24px; font-weight:700; }
+#donutCount, #donutTypeCount{ font-family: var(--font-mono); font-size: 24px; font-weight:700; }
 .donut-center-label{ font-size: 10px; color: var(--text-faint); text-transform:uppercase; letter-spacing:.08em; }
 .legend{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
 .legend li{ display:flex; align-items:center; gap:8px; font-size: 13px; }
@@ -187,6 +187,30 @@ main{ max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
 .gauge-label{ display:flex; justify-content:space-between; font-size: 10.5px; color: var(--text-faint); margin-top:5px; font-family: var(--font-mono); }
 .gauge-label.warn{ color: var(--red); }
 .env-rate{ font-size: 11.5px; color: var(--text-muted); margin-top: 10px; font-family: var(--font-mono); }
+
+/* ---------- goal card ---------- */
+.card-goal{ margin-bottom: 4px; }
+.goal-top{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; flex-wrap:wrap; margin-bottom: 14px; }
+.goal-value{ font-family: var(--font-mono); font-weight:700; font-size: 22px; margin-top:4px; }
+.goal-projection{ font-size: 12.5px; color: var(--text-muted); text-align:right; max-width: 320px; }
+.goal-track{ height:10px; }
+
+/* ---------- tax card ---------- */
+.card-tax{ display:flex; flex-direction:column; }
+.tax-empty{ color: var(--text-faint); font-size: 13px; margin: 8px 0; }
+.tax-row{ display:flex; justify-content:space-between; align-items:baseline; padding: 7px 0; border-bottom: 1px solid var(--border-soft); font-size: 13.5px; }
+.tax-row:last-of-type{ border-bottom:none; }
+.tax-row .label{ color: var(--text-muted); }
+.tax-row .value{ font-family: var(--font-mono); font-weight:600; }
+.tax-row.net .value{ color: var(--gold-soft); font-size: 16px; }
+.tax-disclaimer{ font-size: 10.5px; color: var(--text-faint); margin: 14px 0 0; line-height:1.5; }
+
+/* ---------- keyboard hint ---------- */
+.kbd-hint{ font-size: 11.5px; color: var(--text-faint); margin-top: 14px; }
+kbd{
+  font-family: var(--font-mono); background: var(--surface-2); border: 1px solid var(--border);
+  border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; font-size: 10.5px; color: var(--text-muted);
+}
 
 /* ---------- simulator ---------- */
 .sim-row{ display:grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 20px; align-items:end; }
