@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PATRIMOINE // Tableau de bord</title>
+<meta name="description" content="Suivi personnel de patrimoine — CTO, PEA, Livret A, Livret Jeune, Assurance Vie">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-text">PATRIMOINE<span class="brand-slash">//</span><span id="brandName">TOM</span></span>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="dashboard">Tableau de bord</button>
+      <button class="tab" data-tab="actifs">Actifs</button>
+      <button class="tab" data-tab="historique">Historique</button>
+      <button class="tab" data-tab="parametres">Paramètres</button>
+    </nav>
+    <div class="topbar-total">
+      <span class="topbar-total-label">Patrimoine net</span>
+      <span class="topbar-total-value" id="topbarTotal">0,00&nbsp;€</span>
+      <span class="topbar-total-delta" id="topbarDelta"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= TICKER ================= -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<main>
+
+  <!-- ================= DASHBOARD ================= -->
+  <section class="view active" id="view-dashboard">
+
+    <div class="grid-hero">
+      <div class="card card-hero">
+        <div class="card-eyebrow">Valorisation totale</div>
+        <div class="hero-value" id="heroTotal">0,00&nbsp;€</div>
+        <div class="hero-sub">
+          <span id="heroGain" class="pill">—</span>
+          <span class="hero-sub-text">plus/moins-value latente vs montant investi</span>
+        </div>
+        <svg id="sparkline" class="sparkline" viewBox="0 0 600 120" preserveAspectRatio="none"></svg>
+      </div>
+
+      <div class="card card-donut">
+        <div class="card-eyebrow">Répartition par enveloppe</div>
+        <div class="donut-wrap">
+          <svg id="donut" viewBox="0 0 200 200"></svg>
+          <div class="donut-center">
+            <span id="donutCount">0</span>
+            <span class="donut-center-label">actifs</span>
+          </div>
+        </div>
+        <ul class="legend" id="donutLegend"></ul>
+      </div>
+    </div>
+
+    <h2 class="section-title">Enveloppes</h2>
+    <div class="grid-envelopes" id="envelopeCards"></div>
+
+    <h2 class="section-title">Simulateur d'intérêts — livrets</h2>
+    <div class="card card-sim">
+      <div class="sim-row">
+        <label>Enveloppe
+          <select id="simEnveloppe">
+            <option value="LA">Livret A</option>
+            <option value="LJ">Livret Jeune</option>
+          </select>
+        </label>
+        <label>Versement mensuel additionnel (€)
+          <input type="number" id="simMonthly" value="0" min="0" step="10">
+        </label>
+        <div class="sim-output" id="simOutput"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ================= ACTIFS ================= -->
+  <section class="view" id="view-actifs">
+    <div class="actifs-toolbar">
+      <div class="toolbar-left">
+        <input type="search" id="searchActif" placeholder="Rechercher un actif…">
+        <select id="filterEnveloppe">
+          <option value="ALL">Toutes les enveloppes</option>
+        </select>
+        <select id="sortActifs">
+          <option value="valeur-desc">Valeur ↓</option>
+          <option value="valeur-asc">Valeur ↑</option>
+          <option value="nom-asc">Nom A→Z</option>
+          <option value="gain-desc">Performance ↓</option>
+          <option value="date-desc">Plus récent</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="btnAddActif">+ Nouvel actif</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table" id="actifsTable">
+        <thead>
+          <tr>
+            <th>Enveloppe</th>
+            <th>Actif</th>
+            <th>Type</th>
+            <th>Qté</th>
+            <th>PRU</th>
+            <th>Investi</th>
+            <th>Valeur</th>
+            <th>+/- value</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="actifsBody"></tbody>
+      </table>
+      <div class="empty-state" id="actifsEmpty" hidden>
+        <p>Aucun actif pour l'instant.</p>
+        <button class="btn btn-ghost" id="btnAddActifEmpty">Ajouter votre premier actif</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HISTORIQUE ================= -->
+  <section class="view" id="view-historique">
+    <div class="hist-header">
+      <h2 class="section-title" style="margin:0">Évolution du patrimoine</h2>
+      <button class="btn btn-primary" id="btnSnapshot">Enregistrer un point aujourd'hui</button>
+    </div>
+    <div class="card">
+      <svg id="lineChart" class="line-chart" viewBox="0 0 900 300" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="table-wrap">
+      <table class="table" id="histTable">
+        <thead><tr><th>Date</th><th>Total</th><th>CTO</th><th>PEA</th><th>Livret A</th><th>Livret Jeune</th><th>Assurance Vie</th><th></th></tr></thead>
+        <tbody id="histBody"></tbody>
+      </table>
+      <div class="empty-state" id="histEmpty" hidden>
+        <p>Aucun point d'historique enregistré. Chaque « snapshot » capture la valeur de ton patrimoine à un instant T.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PARAMETRES ================= -->
+  <section class="view" id="view-parametres">
+    <h2 class="section-title" style="margin-top:0">Identité</h2>
+    <div class="card">
+      <div class="param-row">
+        <label>Nom affiché
+          <input type="text" id="paramName" value="TOM">
+        </label>
+        <label>Devise
+          <select id="paramCurrency">
+            <option value="EUR" selected>€ Euro</option>
+            <option value="USD">$ Dollar</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <h2 class="section-title">Plafonds &amp; taux par enveloppe</h2>
+    <div class="grid-envelopes" id="envelopeParams"></div>
+
+    <h2 class="section-title">Assurance vie — fiscalité</h2>
+    <div class="card">
+      <div class="param-row">
+        <label>Date d'ouverture du contrat
+          <input type="date" id="avOpenDate">
+        </label>
+        <div id="avCountdown" class="av-countdown"></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">Données</h2>
+    <div class="card data-actions">
+      <button class="btn btn-ghost" id="btnExport">Exporter (JSON)</button>
+      <label class="btn btn-ghost btn-file">
+        Importer (JSON)
+        <input type="file" id="btnImport" accept="application/json" hidden>
+      </label>
+      <button class="btn btn-danger" id="btnReset">Réinitialiser toutes les données</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>Données stockées localement dans ton navigateur — aucune information n'est envoyée à un serveur.</span>
+</footer>
+
+<!-- ================= MODAL ACTIF ================= -->
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h3 id="modalTitle">Nouvel actif</h3>
+      <button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button>
+    </div>
+    <form id="actifForm" class="modal-form">
+      <input type="hidden" id="fId">
+      <label>Enveloppe
+        <select id="fEnveloppe" required></select>
+      </label>
+      <label>Nom de l'actif
+        <input type="text" id="fNom" required placeholder="ex : Amundi MSCI World ETF">
+      </label>
+      <label>Type
+        <select id="fType">
+          <option>Action</option>
+          <option>ETF</option>
+          <option>Obligation</option>
+          <option>Fonds €</option>
+          <option>Unité de compte</option>
+          <option>Liquidités</option>
+          <option>Autre</option>
+        </select>
+      </label>
+      <div class="form-row">
+        <label>Quantité <span class="hint">(optionnel)</span>
+          <input type="number" id="fQuantite" step="any" min="0" placeholder="—">
+        </label>
+        <label>Prix unitaire <span class="hint">(optionnel)</span>
+          <input type="number" id="fPrix" step="any" min="0" placeholder="—">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Montant investi <span class="hint">(coût d'acquisition)</span>
+          <input type="number" id="fInvesti" step="any" min="0" placeholder="0">
+        </label>
+        <label>Valeur actuelle <span class="hint">(si pas de qté × prix)</span>
+          <input type="number" id="fValeur" step="any" min="0" placeholder="—">
+        </label>
+      </div>
+      <label>Date d'acquisition / versement
+        <input type="date" id="fDate">
+      </label>
+      <label>Notes <span class="hint">(optionnel)</span>
+        <textarea id="fNotes" rows="2" placeholder="—"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="fDelete" hidden>Supprimer</button>
+        <div class="modal-actions-right">
+          <button type="button" class="btn btn-ghost" id="fCancel">Annuler</button>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
