@@ -70,6 +70,41 @@
     <h2 class="section-title">Enveloppes</h2>
     <div class="grid-envelopes" id="envelopeCards"></div>
 
+    <h2 class="section-title">Objectif patrimonial</h2>
+    <div class="card card-goal" id="goalCard">
+      <div class="goal-top">
+        <div>
+          <div class="card-eyebrow">Progression vers l'objectif</div>
+          <div class="goal-value" id="goalValueText">—</div>
+        </div>
+        <div class="goal-projection" id="goalProjection">Définis un objectif dans Paramètres.</div>
+      </div>
+      <div class="gauge-track goal-track"><div class="gauge-fill" id="goalFill" style="width:0%;background:var(--gold)"></div></div>
+    </div>
+
+    <h2 class="section-title">Composition détaillée</h2>
+    <div class="grid-hero">
+      <div class="card card-donut">
+        <div class="card-eyebrow">Répartition par classe d'actif</div>
+        <div class="donut-wrap">
+          <svg id="donutType" viewBox="0 0 200 200"></svg>
+          <div class="donut-center">
+            <span id="donutTypeCount">0</span>
+            <span class="donut-center-label">types</span>
+          </div>
+        </div>
+        <ul class="legend" id="donutTypeLegend"></ul>
+      </div>
+
+      <div class="card card-tax">
+        <div class="card-eyebrow">Estimation fiscale — Compte-titres</div>
+        <div id="taxContent">
+          <p class="tax-empty">Aucune plus-value latente à estimer sur le CTO pour l'instant.</p>
+        </div>
+        <p class="tax-disclaimer">Estimation simplifiée au prélèvement forfaitaire unique (30%) sur la plus-value latente du compte-titres uniquement — hors abattements, CSG déductible et cas particuliers. PEA, livrets et assurance vie suivent des régimes fiscaux distincts non couverts ici. Ne constitue pas un conseil fiscal.</p>
+      </div>
+    </div>
+
     <h2 class="section-title">Simulateur d'intérêts — livrets</h2>
     <div class="card card-sim">
       <div class="sim-row">
@@ -168,6 +203,18 @@
       </div>
     </div>
 
+    <h2 class="section-title">Objectif patrimonial</h2>
+    <div class="card">
+      <div class="param-row">
+        <label>Montant cible (€)
+          <input type="number" id="goalAmount" min="0" step="1000" placeholder="ex : 100000">
+        </label>
+        <label>Date cible <span class="hint">(optionnel)</span>
+          <input type="date" id="goalDate">
+        </label>
+      </div>
+    </div>
+
     <h2 class="section-title">Plafonds &amp; taux par enveloppe</h2>
     <div class="grid-envelopes" id="envelopeParams"></div>
 
@@ -184,12 +231,14 @@
     <h2 class="section-title">Données</h2>
     <div class="card data-actions">
       <button class="btn btn-ghost" id="btnExport">Exporter (JSON)</button>
+      <button class="btn btn-ghost" id="btnExportCsv">Exporter les actifs (CSV)</button>
       <label class="btn btn-ghost btn-file">
         Importer (JSON)
         <input type="file" id="btnImport" accept="application/json" hidden>
       </label>
       <button class="btn btn-danger" id="btnReset">Réinitialiser toutes les données</button>
     </div>
+    <p class="kbd-hint"><kbd>N</kbd> nouvel actif · <kbd>/</kbd> rechercher un actif · <kbd>Échap</kbd> fermer une fenêtre</p>
   </section>
 
 </main>
