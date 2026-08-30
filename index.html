@@ -105,6 +105,20 @@
       </div>
     </div>
 
+    <h2 class="section-title">Performances</h2>
+    <div class="card">
+      <div class="perf-grid">
+        <div>
+          <div class="card-eyebrow">Meilleures performances</div>
+          <ul class="perf-list" id="perfTop"></ul>
+        </div>
+        <div>
+          <div class="card-eyebrow">Moins bonnes performances</div>
+          <ul class="perf-list" id="perfBottom"></ul>
+        </div>
+      </div>
+    </div>
+
     <h2 class="section-title">Simulateur d'intérêts — livrets</h2>
     <div class="card card-sim">
       <div class="sim-row">
@@ -146,6 +160,7 @@
       <table class="table" id="actifsTable">
         <thead>
           <tr>
+            <th></th>
             <th>Enveloppe</th>
             <th>Actif</th>
             <th>Type</th>
@@ -296,7 +311,10 @@
         <textarea id="fNotes" rows="2" placeholder="—"></textarea>
       </label>
       <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" id="fDelete" hidden>Supprimer</button>
+        <div class="modal-actions-left">
+          <button type="button" class="btn btn-ghost" id="fDuplicate" hidden>Dupliquer</button>
+          <button type="button" class="btn btn-ghost" id="fDelete" hidden>Supprimer</button>
+        </div>
         <div class="modal-actions-right">
           <button type="button" class="btn btn-ghost" id="fCancel">Annuler</button>
           <button type="submit" class="btn btn-primary">Enregistrer</button>
