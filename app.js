@@ -47,10 +47,10 @@ function defaultState(){
    Sur certains navigateurs / contextes (fichier ouvert en file://,
    navigation privée, aperçu dans une iframe sandboxée…), localStorage
    peut être bloqué et lever une exception. Sans protection, le moindre
-   clic sur "Enregistrer" plantait alors silencieusement : la modale ne
-   se fermait jamais et rien ne s'affichait. On teste la disponibilité
-   au démarrage et on bascule sur un stockage en mémoire (le temps de la
-   session) si besoin, pour que le site reste utilisable dans tous les cas. */
+   clic sur "Enregistrer" plantait alors silencieusement. On teste la
+   disponibilité au démarrage et on bascule sur un stockage en mémoire
+   (le temps de la session) si besoin, pour que le site reste utilisable
+   dans tous les cas. */
 let storageAvailable = true;
 let memoryFallback = {};
 
@@ -529,7 +529,7 @@ function escapeHtml(s){
 }
 
 /* =========================================================
-   ACTIFS — table, filtres, modal
+   ACTIFS — table, filtres, panneau
    ========================================================= */
 
 function populateEnvelopeSelects(){
@@ -596,7 +596,7 @@ function renderActifsTable(){
   }).join('');
 
   body.querySelectorAll('tr').forEach(tr => {
-    tr.addEventListener('click', () => openActifModal(tr.dataset.id));
+    tr.addEventListener('click', () => openActifPanel(tr.dataset.id));
   });
   body.querySelectorAll('[data-star]').forEach(btn => {
     btn.addEventListener('click', ev => {
@@ -615,16 +615,16 @@ function renderActifsTable(){
   document.getElementById(id).addEventListener('change', renderActifsTable);
 });
 
-/* ---------- modal ---------- */
-const modalBackdrop = document.getElementById('modalBackdrop');
+/* ---------- panneau actif (intégré dans la page, pas une popup) ---------- */
+const actifPanel = document.getElementById('actifPanel');
 const actifForm = document.getElementById('actifForm');
 
-function openActifModal(id){
+function openActifPanel(id){
   actifForm.reset();
   document.getElementById('fDate').value = todayISO();
   if (id){
     const a = state.actifs.find(x => x.id === id);
-    document.getElementById('modalTitle').textContent = 'Modifier l\'actif';
+    document.getElementById('panelTitle').textContent = 'Modifier l\'actif';
     document.getElementById('fId').value = a.id;
     document.getElementById('fEnveloppe').value = a.enveloppe;
     document.getElementById('fNom').value = a.nom;
@@ -638,37 +638,38 @@ function openActifModal(id){
     document.getElementById('fDelete').hidden = false;
     document.getElementById('fDuplicate').hidden = false;
   } else {
-    document.getElementById('modalTitle').textContent = 'Nouvel actif';
+    document.getElementById('panelTitle').textContent = 'Nouvel actif';
     document.getElementById('fId').value = '';
     document.getElementById('fDelete').hidden = true;
     document.getElementById('fDuplicate').hidden = true;
   }
-  modalBackdrop.hidden = false;
-  document.getElementById('fNom').focus();
+  actifPanel.hidden = false;
+  if (typeof actifPanel.scrollIntoView === 'function'){
+    actifPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  document.getElementById('fNom').focus({ preventScroll: true });
 }
-function closeModal(){
-  modalBackdrop.hidden = true;
-  // Le focus reste sinon coincé sur un champ désormais masqué, ce qui bloquerait
-  // les raccourcis clavier (n, /) tant qu'on n'a pas cliqué ailleurs manuellement.
-  if (document.activeElement && modalBackdrop.contains(document.activeElement)){
+function closeActifPanel(){
+  actifPanel.hidden = true;
+  if (document.activeElement && actifPanel.contains(document.activeElement)){
     document.activeElement.blur();
   }
 }
 
-document.getElementById('btnAddActif').addEventListener('click', () => openActifModal(null));
-document.getElementById('btnAddActifEmpty').addEventListener('click', () => openActifModal(null));
-document.getElementById('modalClose').addEventListener('click', closeModal);
-document.getElementById('fCancel').addEventListener('click', closeModal);
-modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+document.getElementById('btnAddActif').addEventListener('click', () => openActifPanel(null));
+document.getElementById('btnAddActifEmpty').addEventListener('click', () => openActifPanel(null));
+document.getElementById('panelClose').addEventListener('click', closeActifPanel);
+document.getElementById('fCancel').addEventListener('click', closeActifPanel);
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && !modalBackdrop.hidden){ closeModal(); return; }
+  if (e.key === 'Escape' && !actifPanel.hidden){ closeActifPanel(); return; }
 
   const typingInField = ['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName);
 
   // "n" -> nouvel actif (sauf si on est en train de taper quelque part)
-  if (e.key === 'n' && !typingInField && modalBackdrop.hidden){
+  if (e.key === 'n' && !typingInField && actifPanel.hidden){
     e.preventDefault();
-    openActifModal(null);
+    document.querySelector('.tab[data-tab="actifs"]').click();
+    openActifPanel(null);
     return;
   }
 
@@ -687,7 +688,7 @@ actifForm.addEventListener('submit', e => {
   const payload = {
     id,
     enveloppe: document.getElementById('fEnveloppe').value,
-    nom: document.getElementById('fNom').value.trim(),
+    nom: document.getElementById('fNom').value.trim() || 'Actif sans nom',
     type: document.getElementById('fType').value,
     quantite: parseFloat(document.getElementById('fQuantite').value) || null,
     prix: parseFloat(document.getElementById('fPrix').value) || null,
@@ -700,7 +701,7 @@ actifForm.addEventListener('submit', e => {
   if (existingIdx >= 0) state.actifs[existingIdx] = payload;
   else state.actifs.push(payload);
   saveState();
-  closeModal();
+  closeActifPanel();
   renderActifsTable();
   renderDashboard();
   toast(existingIdx >= 0 ? 'Actif mis à jour' : 'Actif ajouté');
@@ -714,7 +715,7 @@ document.getElementById('fDuplicate').addEventListener('click', () => {
   const copy = { ...src, id: uid(), nom: src.nom + ' (copie)', favori: false };
   state.actifs.push(copy);
   saveState();
-  closeModal();
+  closeActifPanel();
   renderActifsTable();
   renderDashboard();
   toast('Actif dupliqué — pense à ajuster la valeur si besoin');
@@ -726,7 +727,7 @@ document.getElementById('fDelete').addEventListener('click', () => {
   if (!confirm('Supprimer définitivement cet actif ?')) return;
   state.actifs = state.actifs.filter(a => a.id !== id);
   saveState();
-  closeModal();
+  closeActifPanel();
   renderActifsTable();
   renderDashboard();
   toast('Actif supprimé');
