@@ -227,9 +227,34 @@ function renderDashboard(){
   renderGoal();
   renderDonutType();
   renderTaxEstimate();
+  renderTopPerformances();
   renderTicker();
   renderSimulator();
   updateTopbar();
+}
+
+/* ---------- top / flop performances ---------- */
+function renderTopPerformances(){
+  const topEl = document.getElementById('perfTop');
+  const bottomEl = document.getElementById('perfBottom');
+  const withGain = state.actifs
+    .map(a => ({ a, gp: actifGainPct(a) }))
+    .filter(x => x.gp !== null);
+
+  if (!withGain.length){
+    const msg = '<li class="perf-empty" style="list-style:none">Renseigne un montant investi sur au moins un actif pour voir apparaître un classement.</li>';
+    topEl.innerHTML = msg;
+    bottomEl.innerHTML = msg;
+    return;
+  }
+
+  const sorted = [...withGain].sort((x,y) => y.gp - x.gp);
+  const top = sorted.slice(0, 3);
+  const bottom = sorted.slice(-3).reverse();
+
+  const itemHtml = x => `<li><span class="name">${escapeHtml(x.a.nom)}</span><span class="value ${x.gp>=0?'gain-pos':'gain-neg'}">${pct(x.gp)}</span></li>`;
+  topEl.innerHTML = top.map(itemHtml).join('');
+  bottomEl.innerHTML = bottom.map(itemHtml).join('');
 }
 
 /* ---------- objectif patrimonial ---------- */
@@ -538,6 +563,8 @@ function renderActifsTable(){
       default: return actifValeur(b) - actifValeur(a);
     }
   });
+  // Les favoris remontent toujours en tête, quel que soit le tri choisi
+  list.sort((a,b) => (b.favori?1:0) - (a.favori?1:0));
 
   if (!list.length){
     body.innerHTML = '';
@@ -555,6 +582,7 @@ function renderActifsTable(){
       : `<span class="${gain>=0?'gain-pos':'gain-neg'}">${money(gain,{decimals:0})} (${pct(gp)})</span>`;
     return `
       <tr data-id="${a.id}">
+        <td><button type="button" class="star-btn ${a.favori?'active':''}" data-star="${a.id}" title="Marquer comme favori">${a.favori?'★':'☆'}</button></td>
         <td><span class="env-tag" style="background:${e.color}22;color:${e.color}">${e.code}</span></td>
         <td>${escapeHtml(a.nom)}</td>
         <td>${escapeHtml(a.type||'—')}</td>
@@ -569,6 +597,16 @@ function renderActifsTable(){
 
   body.querySelectorAll('tr').forEach(tr => {
     tr.addEventListener('click', () => openActifModal(tr.dataset.id));
+  });
+  body.querySelectorAll('[data-star]').forEach(btn => {
+    btn.addEventListener('click', ev => {
+      ev.stopPropagation();
+      const a = state.actifs.find(x => x.id === btn.dataset.star);
+      if (!a) return;
+      a.favori = !a.favori;
+      saveState();
+      renderActifsTable();
+    });
   });
 }
 
@@ -598,10 +636,12 @@ function openActifModal(id){
     document.getElementById('fDate').value = a.date || todayISO();
     document.getElementById('fNotes').value = a.notes || '';
     document.getElementById('fDelete').hidden = false;
+    document.getElementById('fDuplicate').hidden = false;
   } else {
     document.getElementById('modalTitle').textContent = 'Nouvel actif';
     document.getElementById('fId').value = '';
     document.getElementById('fDelete').hidden = true;
+    document.getElementById('fDuplicate').hidden = true;
   }
   modalBackdrop.hidden = false;
   document.getElementById('fNom').focus();
@@ -643,6 +683,7 @@ document.addEventListener('keydown', e => {
 actifForm.addEventListener('submit', e => {
   e.preventDefault();
   const id = document.getElementById('fId').value || uid();
+  const existingIdx = state.actifs.findIndex(a => a.id === id);
   const payload = {
     id,
     enveloppe: document.getElementById('fEnveloppe').value,
@@ -653,9 +694,9 @@ actifForm.addEventListener('submit', e => {
     investi: parseFloat(document.getElementById('fInvesti').value) || 0,
     valeur: parseFloat(document.getElementById('fValeur').value) || 0,
     date: document.getElementById('fDate').value || todayISO(),
-    notes: document.getElementById('fNotes').value.trim()
+    notes: document.getElementById('fNotes').value.trim(),
+    favori: existingIdx >= 0 ? !!state.actifs[existingIdx].favori : false
   };
-  const existingIdx = state.actifs.findIndex(a => a.id === id);
   if (existingIdx >= 0) state.actifs[existingIdx] = payload;
   else state.actifs.push(payload);
   saveState();
@@ -663,6 +704,20 @@ actifForm.addEventListener('submit', e => {
   renderActifsTable();
   renderDashboard();
   toast(existingIdx >= 0 ? 'Actif mis à jour' : 'Actif ajouté');
+});
+
+document.getElementById('fDuplicate').addEventListener('click', () => {
+  const original = document.getElementById('fId').value;
+  if (!original) return;
+  const src = state.actifs.find(a => a.id === original);
+  if (!src) return;
+  const copy = { ...src, id: uid(), nom: src.nom + ' (copie)', favori: false };
+  state.actifs.push(copy);
+  saveState();
+  closeModal();
+  renderActifsTable();
+  renderDashboard();
+  toast('Actif dupliqué — pense à ajuster la valeur si besoin');
 });
 
 document.getElementById('fDelete').addEventListener('click', () => {
