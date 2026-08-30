@@ -259,6 +259,42 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
 .toolbar-left{ display:flex; gap:10px; flex-wrap:wrap; }
 .toolbar-left input, .toolbar-left select{ width:auto; min-width: 160px; }
 
+/* ---------- panneau actif (intégré, pas une popup) ---------- */
+.actif-panel{
+  background: var(--surface); border:1px solid var(--gold); border-radius: var(--radius-lg);
+  margin-bottom: 18px; overflow:hidden; animation: panel-in .2s ease;
+  box-shadow: 0 0 0 3px rgba(201,162,39,0.08);
+}
+@keyframes panel-in{ from{ opacity:0; transform: translateY(-6px);} to{ opacity:1; transform:none; } }
+.panel-head{
+  display:flex; justify-content:space-between; align-items:center; padding: 16px 20px;
+  border-bottom: 1px solid var(--border); background: var(--surface-2);
+}
+.panel-head h3{ margin:0; font-family: var(--font-display); font-size:16px; }
+.panel-form{ padding: 20px; display:flex; flex-direction:column; gap: 14px; }
+.form-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.panel-actions{
+  display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+  padding-top: 6px; border-top: 1px solid var(--border-soft); margin-top: 4px;
+}
+.panel-actions-left, .panel-actions-right{ display:flex; gap:10px; flex-wrap:wrap; }
+.modal-close{
+  background: var(--surface-3); border:1px solid var(--border); color: var(--text);
+  font-size: 20px; cursor:pointer; line-height:1; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.modal-close:hover{ border-color: var(--red); color: var(--red); }
+
+/* ---------- toast ---------- */
+.toast{
+  position: fixed; bottom: 24px; left:50%; transform: translateX(-50%) translateY(20px);
+  background: var(--surface-3); border:1px solid var(--gold); color: var(--text);
+  padding: 11px 20px; border-radius: 8px; font-size: 13px; font-weight:500;
+  opacity:0; pointer-events:none; transition: all .25s ease; z-index: 200;
+  font-family: var(--font-mono);
+}
+.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
 .table-wrap{
   background: var(--surface); border:1px solid var(--border); border-radius: var(--radius-lg);
   overflow:hidden;
@@ -308,48 +344,6 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
   text-align:center; padding: 24px; color: var(--text-faint); font-size: 11.5px;
   border-top: 1px solid var(--border-soft);
 }
-
-/* ---------- modal ---------- */
-.modal-backdrop{
-  position:fixed; inset:0; background: rgba(4,6,10,0.7); backdrop-filter: blur(3px);
-  display:flex; align-items:center; justify-content:center; z-index: 100; padding: 20px;
-}
-.modal{
-  background: var(--surface-2); border:1px solid var(--border); border-radius: var(--radius-lg);
-  width: 100%; max-width: 480px; max-height: 90vh; overflow-y:auto;
-  box-shadow: var(--shadow);
-  animation: modal-in .18s ease;
-}
-@keyframes modal-in{ from{ opacity:0; transform: translateY(8px) scale(.98);} to{ opacity:1; transform:none; } }
-.modal-head{
-  display:flex; justify-content:space-between; align-items:center; padding: 18px 22px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--surface-2); z-index: 2;
-}
-.modal-head h3{ margin:0; font-family: var(--font-display); font-size:17px; }
-.modal-close{
-  background: var(--surface-3); border:1px solid var(--border); color: var(--text);
-  font-size: 20px; cursor:pointer; line-height:1; width:32px; height:32px; border-radius:8px;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
-}
-.modal-close:hover{ border-color: var(--red); color: var(--red); }
-.modal-form{ padding: 20px 22px; display:flex; flex-direction:column; gap: 14px; }
-.form-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.modal-actions{
-  display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
-  margin: 6px -22px -20px; padding: 14px 22px; position: sticky; bottom: 0;
-  background: var(--surface-2); border-top: 1px solid var(--border);
-}
-.modal-actions-left, .modal-actions-right{ display:flex; gap:10px; flex-wrap:wrap; }
-
-/* ---------- toast ---------- */
-.toast{
-  position: fixed; bottom: 24px; left:50%; transform: translateX(-50%) translateY(20px);
-  background: var(--surface-3); border:1px solid var(--gold); color: var(--text);
-  padding: 11px 20px; border-radius: 8px; font-size: 13px; font-weight:500;
-  opacity:0; pointer-events:none; transition: all .25s ease; z-index: 200;
-  font-family: var(--font-mono);
-}
-.toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
 
 /* ---------- responsive ---------- */
 @media (max-width: 900px){
