@@ -205,6 +205,14 @@ main{ max-width: 1280px; margin: 0 auto; padding: 32px 28px 80px; }
 .tax-row.net .value{ color: var(--gold-soft); font-size: 16px; }
 .tax-disclaimer{ font-size: 10.5px; color: var(--text-faint); margin: 14px 0 0; line-height:1.5; }
 
+/* ---------- top performances ---------- */
+.perf-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.perf-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.perf-list li{ display:flex; justify-content:space-between; align-items:center; gap:10px; font-size: 13px; }
+.perf-list .name{ color: var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.perf-list .value{ font-family: var(--font-mono); font-weight:600; flex-shrink:0; }
+.perf-empty{ color: var(--text-faint); font-size: 13px; margin:0; }
+
 /* ---------- keyboard hint ---------- */
 .kbd-hint{ font-size: 11.5px; color: var(--text-faint); margin-top: 14px; }
 kbd{
@@ -272,6 +280,12 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
 .gain-pos{ color: var(--green); }
 .gain-neg{ color: var(--red); }
 .row-arrow{ color: var(--text-faint); text-align:right; }
+.star-btn{
+  background:none; border:none; cursor:pointer; font-size: 15px; padding: 2px 4px;
+  color: var(--text-faint); line-height:1;
+}
+.star-btn.active{ color: var(--gold); }
+.star-btn:hover{ color: var(--gold-soft); }
 
 .empty-state{ padding: 48px 20px; text-align:center; color: var(--text-muted); }
 .empty-state p{ margin: 0 0 14px; font-size: 13.5px; }
@@ -307,13 +321,25 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
   animation: modal-in .18s ease;
 }
 @keyframes modal-in{ from{ opacity:0; transform: translateY(8px) scale(.98);} to{ opacity:1; transform:none; } }
-.modal-head{ display:flex; justify-content:space-between; align-items:center; padding: 18px 22px; border-bottom: 1px solid var(--border); }
+.modal-head{
+  display:flex; justify-content:space-between; align-items:center; padding: 18px 22px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--surface-2); z-index: 2;
+}
 .modal-head h3{ margin:0; font-family: var(--font-display); font-size:17px; }
-.modal-close{ background:none; border:none; color: var(--text-muted); font-size: 22px; cursor:pointer; line-height:1; }
+.modal-close{
+  background: var(--surface-3); border:1px solid var(--border); color: var(--text);
+  font-size: 20px; cursor:pointer; line-height:1; width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.modal-close:hover{ border-color: var(--red); color: var(--red); }
 .modal-form{ padding: 20px 22px; display:flex; flex-direction:column; gap: 14px; }
 .form-row{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.modal-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
-.modal-actions-right{ display:flex; gap:10px; }
+.modal-actions{
+  display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;
+  margin: 6px -22px -20px; padding: 14px 22px; position: sticky; bottom: 0;
+  background: var(--surface-2); border-top: 1px solid var(--border);
+}
+.modal-actions-left, .modal-actions-right{ display:flex; gap:10px; flex-wrap:wrap; }
 
 /* ---------- toast ---------- */
 .toast{
@@ -328,6 +354,7 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
 /* ---------- responsive ---------- */
 @media (max-width: 900px){
   .grid-hero{ grid-template-columns: 1fr; }
+  .perf-grid{ grid-template-columns: 1fr; }
   .sim-row{ grid-template-columns: 1fr; }
   .topbar-inner{ flex-wrap:wrap; gap:12px; }
   .tabs{ order:3; width:100%; overflow-x:auto; }
@@ -335,8 +362,8 @@ label{ display:flex; flex-direction:column; gap:6px; font-size: 12.5px; color: v
 }
 @media (max-width: 640px){
   main{ padding: 22px 16px 60px; }
-  .table th:nth-child(4), .table td:nth-child(4),
-  .table th:nth-child(5), .table td:nth-child(5){ display:none; }
+  .table th:nth-child(5), .table td:nth-child(5),
+  .table th:nth-child(6), .table td:nth-child(6){ display:none; }
   .form-row{ grid-template-columns: 1fr; }
 }
 
