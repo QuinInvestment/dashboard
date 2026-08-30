@@ -156,6 +156,70 @@
       <button class="btn btn-primary" id="btnAddActif">+ Nouvel actif</button>
     </div>
 
+    <!-- ================= PANNEAU ACTIF (intégré, pas une popup) ================= -->
+    <div class="actif-panel" id="actifPanel" hidden>
+      <div class="panel-head">
+        <h3 id="panelTitle">Nouvel actif</h3>
+        <button class="modal-close" id="panelClose" aria-label="Fermer le panneau">&times;</button>
+      </div>
+      <form id="actifForm" class="panel-form">
+        <input type="hidden" id="fId">
+        <div class="form-row">
+          <label>Enveloppe
+            <select id="fEnveloppe"></select>
+          </label>
+          <label>Type
+            <select id="fType">
+              <option>Action</option>
+              <option>ETF</option>
+              <option>Obligation</option>
+              <option>Fonds €</option>
+              <option>Unité de compte</option>
+              <option>Liquidités</option>
+              <option>Autre</option>
+            </select>
+          </label>
+        </div>
+        <label>Nom de l'actif <span class="hint">(optionnel)</span>
+          <input type="text" id="fNom" placeholder="ex : Amundi MSCI World ETF">
+        </label>
+        <div class="form-row">
+          <label>Quantité <span class="hint">(optionnel)</span>
+            <input type="number" id="fQuantite" step="any" min="0" placeholder="—">
+          </label>
+          <label>Prix unitaire <span class="hint">(optionnel)</span>
+            <input type="number" id="fPrix" step="any" min="0" placeholder="—">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Montant investi <span class="hint">(optionnel)</span>
+            <input type="number" id="fInvesti" step="any" min="0" placeholder="—">
+          </label>
+          <label>Valeur actuelle <span class="hint">(si pas de qté × prix)</span>
+            <input type="number" id="fValeur" step="any" min="0" placeholder="—">
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Date d'acquisition / versement <span class="hint">(optionnel)</span>
+            <input type="date" id="fDate">
+          </label>
+          <label>Notes <span class="hint">(optionnel)</span>
+            <input type="text" id="fNotes" placeholder="—">
+          </label>
+        </div>
+        <div class="panel-actions">
+          <div class="panel-actions-left">
+            <button type="button" class="btn btn-ghost" id="fDuplicate" hidden>Dupliquer</button>
+            <button type="button" class="btn btn-ghost" id="fDelete" hidden>Supprimer</button>
+          </div>
+          <div class="panel-actions-right">
+            <button type="button" class="btn btn-ghost" id="fCancel">Fermer</button>
+            <button type="submit" class="btn btn-primary">Enregistrer</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
     <div class="table-wrap">
       <table class="table" id="actifsTable">
         <thead>
@@ -253,7 +317,7 @@
       </label>
       <button class="btn btn-danger" id="btnReset">Réinitialiser toutes les données</button>
     </div>
-    <p class="kbd-hint"><kbd>N</kbd> nouvel actif · <kbd>/</kbd> rechercher un actif · <kbd>Échap</kbd> fermer une fenêtre</p>
+    <p class="kbd-hint"><kbd>N</kbd> nouvel actif · <kbd>/</kbd> rechercher un actif · <kbd>Échap</kbd> fermer le panneau</p>
   </section>
 
 </main>
@@ -261,68 +325,6 @@
 <footer class="foot">
   <span>Données stockées localement dans ton navigateur — aucune information n'est envoyée à un serveur.</span>
 </footer>
-
-<!-- ================= MODAL ACTIF ================= -->
-<div class="modal-backdrop" id="modalBackdrop" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <div class="modal-head">
-      <h3 id="modalTitle">Nouvel actif</h3>
-      <button class="modal-close" id="modalClose" aria-label="Fermer">&times;</button>
-    </div>
-    <form id="actifForm" class="modal-form">
-      <input type="hidden" id="fId">
-      <label>Enveloppe
-        <select id="fEnveloppe" required></select>
-      </label>
-      <label>Nom de l'actif
-        <input type="text" id="fNom" required placeholder="ex : Amundi MSCI World ETF">
-      </label>
-      <label>Type
-        <select id="fType">
-          <option>Action</option>
-          <option>ETF</option>
-          <option>Obligation</option>
-          <option>Fonds €</option>
-          <option>Unité de compte</option>
-          <option>Liquidités</option>
-          <option>Autre</option>
-        </select>
-      </label>
-      <div class="form-row">
-        <label>Quantité <span class="hint">(optionnel)</span>
-          <input type="number" id="fQuantite" step="any" min="0" placeholder="—">
-        </label>
-        <label>Prix unitaire <span class="hint">(optionnel)</span>
-          <input type="number" id="fPrix" step="any" min="0" placeholder="—">
-        </label>
-      </div>
-      <div class="form-row">
-        <label>Montant investi <span class="hint">(coût d'acquisition)</span>
-          <input type="number" id="fInvesti" step="any" min="0" placeholder="0">
-        </label>
-        <label>Valeur actuelle <span class="hint">(si pas de qté × prix)</span>
-          <input type="number" id="fValeur" step="any" min="0" placeholder="—">
-        </label>
-      </div>
-      <label>Date d'acquisition / versement
-        <input type="date" id="fDate">
-      </label>
-      <label>Notes <span class="hint">(optionnel)</span>
-        <textarea id="fNotes" rows="2" placeholder="—"></textarea>
-      </label>
-      <div class="modal-actions">
-        <div class="modal-actions-left">
-          <button type="button" class="btn btn-ghost" id="fDuplicate" hidden>Dupliquer</button>
-          <button type="button" class="btn btn-ghost" id="fDelete" hidden>Supprimer</button>
-        </div>
-        <div class="modal-actions-right">
-          <button type="button" class="btn btn-ghost" id="fCancel">Annuler</button>
-          <button type="submit" class="btn btn-primary">Enregistrer</button>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
 
 <div class="toast" id="toast"></div>
 
